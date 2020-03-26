@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Col, Row, Button, Form, FormGroup, Label, Input, FormFeedback } from "reactstrap";
 import * as yup from "yup";
 import { Formik } from "formik";
@@ -17,15 +17,15 @@ export const PurchaseForm = ({ savePurchase, purchase, categories }) => {
     purchase.categoryId = "";
   }
 
-  const submitForm = data => {
+  const submitForm = async data => {
     // console.log(data);
     const formData = { ...data };
+    reset();
     formData.purchaseDate = new Date(formData.purchaseDate).toISOString();
     formData.purchaseAmount = parseFloat(formData.purchaseAmount);
     formData.categoryId = parseInt(formData.categoryId);
 
-    savePurchase(formData);
-    reset(data);
+    await savePurchase(formData);
   };
 
   const schema = yup.object({
@@ -37,7 +37,7 @@ export const PurchaseForm = ({ savePurchase, purchase, categories }) => {
     purchaseDate: yup
       .date("Purchase Date must be a valid date!")
       .required("Purchase Date is required!"),
-    memo: yup.string(),
+    memo: yup.string().required("Memo is required!"),
     categoryId: yup.string().required("Category is required!")
   });
 
@@ -129,7 +129,7 @@ export const PurchaseForm = ({ savePurchase, purchase, categories }) => {
                     onBlur={handleBlur}
                     style={{ display: "block" }}
                   >
-                    <option>Select a Category...</option>
+                    <option value="">Select a Category...</option>
                     {categories.map(item => {
                       return (
                         <option key={item.categoryId} value={item.categoryId}>
